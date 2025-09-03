@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario de Preguntas y Respuestas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .option-label.disabled {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body class="bg-gray-800 text-gray-200">
+
+    <div class="container mx-auto p-4 sm:p-6 md:p-8 max-w-4xl">
+        <header class="bg-gray-700 shadow-md rounded-lg p-6 mb-6">
+            <h1 class="text-2xl sm:text-3xl font-bold text-center text-teal-400">Cuestionario de Enfermería</h1>
+        </header>
+
+        <!-- Scoreboard -->
+        <div class="bg-gray-700 shadow-md rounded-lg p-4 mb-6 flex justify-around text-center">
+            <div>
+                <p class="text-sm text-gray-400">ACIERTOS</p>
+                <p id="correct-score" class="text-2xl font-bold text-green-400">0</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-400">ERRORES</p>
+                <p id="incorrect-score" class="text-2xl font-bold text-red-400">0</p>
+            </div>
+        </div>
+
+        <main id="quiz-container">
+            <!-- La pregunta actual se insertará aquí -->
+        </main>
+        
+        <footer class="mt-8 text-center">
+            <button id="next-btn" class="hidden bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-teal-400">
+                Siguiente Pregunta
+            </button>
+            <button id="restart-btn" class="hidden bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-400">
+                Reiniciar Test
+            </button>
+        </footer>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "1. La capacidad de la familia para mantener el equilibrio en situaciones de crisis, es lo que entendemos por:",
+                options: { a: "Normalización familiar.", b: "Resistencia familiar.", c: "Afrontamiento familiar.", d: "Salud familiar." },
+                answer: "b"
+            },
+            {
+                question: "2. Señala el diagnóstico de enfermería en el que se produce un cambio, positivo o negativo, en las relaciones o en el funcionamiento familiar y que hace que Ésta no sea capaz de mantener el bienestar de sus miembros:",
+                options: { a: "Disposición para mejorar los procesos familiares.", b: "Interrupción de los procesos familiares.", c: "Riesgo de deterioro de la vinculación.", d: "Procesos familiares disfuncionales." },
+                answer: "b"
+            },
+            {
+                question: "3. El cuidado informal de una persona dependiente puede tener una serie de consecuencias en la persona que lo ejerce, señala la incorrecta al respecto:",
+                options: { a: "Crecimiento personal, conocimiento de uno mismo, mayor implicación altruista.", b: "Facilidad para mantener la relación social, porque tienen el apoyo del resto de familiares.", c: "Peor salud percibida, más dolor y más consumo de fármacos.", d: "Incremento del gasto, abandono temporal o definitivo del trabajo." },
+                answer: "b"
+            },
+            {
+                question: "4. Sobre la educación terapéutica y la educación sanitaria es cierto que:",
+                options: { a: "La educación sanitaria va dirigida a reducir los costes de las enfermedades a las personas con enfermedades crónicas para evitar las complicaciones.", b: "El plan de cuidados diseñado para el diagnóstico de \"Conocimientos deficientes\" puede adaptarse a las etapas de la educación terapéutica.", c: "La educación sanitaria debe realizarla sólo el personal sanitario.", d: "La educación terapéutica tiene como uno de sus objetivos que los pacientes acudan a la consulta de enfermería." },
+                answer: "b"
+            },
+            {
+                question: "5. La valoración funcional del adulto es fundamental para detectar posibles riesgos y deterioros de la movilidad. Para ello contamos con diversas escalas que nos ayudan en dicha tarea. Aquella que valora la marcha y el equilibrio es:",
+                options: { a: "Escala de Barthel.", b: "Cuestionario de MOS.", c: "Escala de tinetti.", d: "Índice de Katz." },
+                answer: "c"
+            },
+            {
+                question: "6. En cuanto a la hipertensión como factor de riesgo principal de las enfermedades cardiovasculares, es cierto que:",
+                options: { a: "El tratamiento farmacológico es la primera línea de actuación.", b: "La HTA sistólica aislada no es un factor de riesgo importante en ancianos.", c: "La mayoría de los pacientes hipertensos están bien controlados.", d: "La enfermera tiene un papel clave en la educación para la salud y el seguimiento." },
+                answer: "d"
+            },
+            {
+                question: "7. Sobre el seguimiento y cribado de complicaciones de los pacientes diabéticos en atención primaria es cierto que:",
+                options: { a: "Un paciente bien controlado se le realizar una visita cada 3 meses.", b: "Para detectar la posible nefropatía diabética se debe realizar la determinación de creatinina y albúmina cada 12 meses.", c: "El riesgo vascular se determina realizando exclusivamente un EKG cada 6 meses.", d: "Para el cribado de la retinopatía diabética, se debe realizar exploraciones cada 6 meses derivándose a atención hospitalarias en caso de alteraciones." },
+                answer: "b"
+            },
+            {
+                question: "8. Sobre la situación actual del consumo de drogas es cierto que:",
+                options: { a: "La bebida alcohólica más consumida es el vino, seguido de la cerveza y el alcohol destilado.", b: "La cocaína experimenta una tendencia de consumo descendente y el consumo se iguala entre sexos.", c: "En España el cannabis es la droga ilegal más consumida y aceptada, pero sufre una tendencia descendente.", d: "La vía de administración de la heroína ha cambiado de parenteral a pulmonar." },
+                answer: "d"
+            },
+            {
+                question: "9. La Ley de Promoción de la Autonomía y Atención a las Personas en situación de Dependencia reconoce una serie de prestaciones para las personas que se encuentran en situación de dependencia. Es incorrecto que:",
+                options: { a: "Las prestaciones vinculadas a servicios de atención y cuidados incluyen tele asistencia.", b: "Las prestaciones económicas incluyen compensación económica a familiares y servicio de ayuda a domicilio.", c: "Las prestaciones de promoción de la autonomía engloban atención residencial y tele asistencia.", d: "Centro de día y noche es una prestación para la prevención de la dependencia." },
+                answer: "b"
+            },
+            {
+                question: "10. Señale la afirmación correcta en relación a la tuberculosis:",
+                options: { a: "Es una enfermedad con mayor prevalencia en los países de desarrollo.", b: "El 85-90% de las personas que se infectan no desarrollan la enfermedad.", c: "Su agente causal no genera resistencia a los fármacos.", d: "a y b son verdaderas." },
+                answer: "d"
+            },
+            {
+                question: "11. ¿Cuál es el agente causal de las gastroenteritis más frecuentes en los países desarrollados?",
+                options: { a: "El virus de Norwalk.", b: "Campilobacteriosis.", c: "La Salmonella.", d: "Equinococosis." },
+                answer: "b"
+            },
+            {
+                question: "12. En el diagnóstico enfermero de \"Intolerancia al ejercicio\", se plantean una serie de NOCs para llevar a cabo el proceso enfermero, excepto:",
+                options: { a: "Manejo de la energía.", b: "Conservación de la energía.", c: "Resistencia.", d: "Tolerancia al ejercicio." },
+                answer: "a"
+            },
+            {
+                question: "13. Para evitar la contaminación y la proliferación de microorganismos hay que tener en cuenta el siguiente estamento:",
+                options: { a: "Conservar los alimentos crudos junto a cocinados teniendo en cuenta las normas adecuadas de conservación.", b: "Los alimentos deben cocinarse a 60°C.", c: "Un manipulador de alimentos puede comer en la cocina mientras trabaja.", d: "En el cuidado de las cocinas evitar barrer en seco." },
+                answer: "d"
+            },
+            {
+                question: "14. Sobre el círculo en el que se encuentra enmarcado el rol del drogodependiente podemos afirmar los siguientes estamentos, señala el correcto.",
+                options: { a: "La exclusión social conduce a la falta de autoestima y delincuencia.", b: "Rechazar los programas de desintoxicación supone el hecho diferencial que lleva a inicial el círculo.", c: "El deterioro de las habilidades sociales se identifica con la pérdida de control y la baja autoestima.", d: "La pérdida de habilidades psicosociales hace que el drogodependiente vea la realidad a través de las sustancias a las que es adicto." },
+                answer: "d"
+            },
+            {
+                question: "15. Entre las medidas de prevención que se contemplan en el Reglamento Sanitario Internacional, NO aparece:",
+                options: { a: "Notificación de la zona afectada.", b: "Organización de aerolíneas.", c: "Medidas de salida a arribo.", d: "Certificado de vacunación." },
+                answer: "b"
+            },
+            {
+                question: "16. En relación a la pediculosis, no es cierto que:",
+                options: { a: "En caso de enfermedad resistente al tratamiento se aplica Permetrina al 5%.", b: "El agente causal pasa por dos fases en su ciclo vital, liendre y piojo.", c: "Es necesario declarar el caso al centro educativo.", d: "Para desinfectar los fómites, hay que cerrar la ropa en bolsas herméticas durante 10 días." },
+                answer: "b"
+            },
+            {
+                question: "17. Con respecto a la brucelosis, es cierto que:",
+                options: { a: "La especie más patógena para el hombre es la suis que transmitida por cabras y ovejas.", b: "No es obligatoria su declaración.", c: "Su periodo de incubación es de 4 semanas.", d: "Entre las medidas de control del reservorio animal se encuentra la vacunación masiva de los animales." },
+                answer: "d"
+            },
+            {
+                question: "18. En el cuidado que deben recibir las personas diabéticas en atención primaria encontramos una de las siguientes afirmaciones, señala cual es falsa:",
+                options: { a: "Se incluyen en el programa DIRAYA según el tipo de proceso (tipo de diabetes).", b: "Se registran los resultados de las pruebas complementarias realizadas.", c: "El objetivo de tratamiento es HbA1c menor a 7%.", d: "Se utiliza como diagnóstico definitivo el resultado de la glucemia capilar." },
+                answer: "d"
+            },
+            {
+                question: "19. Entre las actuaciones que puede realizar la enfermera en la prevención de los accidentes de tráfico NO encontramos:",
+                options: { a: "Intervenir en las medidas legislativas.", b: "Participar en los programas comunitarios de educación vial.", c: "Ayudar a detectar las patologías asociadas.", d: "Enseñar a utilizar correctamente los dispositivos de seguridad." },
+                answer: "a"
+            }
+        ];
+
+        const quizContainer = document.getElementById('quiz-container');
+        const nextButton = document.getElementById('next-btn');
+        const restartButton = document.getElementById('restart-btn');
+        const correctScoreElem = document.getElementById('correct-score');
+        const incorrectScoreElem = document.getElementById('incorrect-score');
+
+        let currentQuestionIndex = 0;
+        let correctCount = 0;
+        let incorrectCount = 0;
+
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            correctCount = 0;
+            incorrectCount = 0;
+            updateScoreboard();
+            showQuestion();
+            nextButton.classList.add('hidden');
+            restartButton.classList.add('hidden');
+        }
+        
+        function showQuestion() {
+            quizContainer.innerHTML = '';
+            nextButton.classList.add('hidden');
+
+            if (currentQuestionIndex >= quizData.length) {
+                showFinalResults();
+                return;
+            }
+
+            const item = quizData[currentQuestionIndex];
+            let questionHTML = `
+                <div class="bg-gray-700 shadow-md rounded-lg p-6 question-card">
+                    <p class="font-semibold text-lg mb-4">${item.question}</p>
+                    <div class="space-y-3 options-container">
+            `;
+            for(const key in item.options) {
+                questionHTML += `
+                    <label data-key="${key}" class="option-label flex items-center p-3 rounded-lg border border-gray-600 hover:bg-gray-600 transition cursor-pointer">
+                        <span class="ml-3 text-gray-300">${key.toUpperCase()}. ${item.options[key]}</span>
+                    </label>
+                `;
+            }
+            questionHTML += `</div></div>`;
+            quizContainer.innerHTML = questionHTML;
+
+            const options = quizContainer.querySelectorAll('.option-label');
+            options.forEach(option => {
+                option.addEventListener('click', handleOptionSelect);
+            });
+        }
+
+        function handleOptionSelect(event) {
+            const selectedLabel = event.currentTarget;
+            const userAnswer = selectedLabel.dataset.key;
+            const correctAnswer = quizData[currentQuestionIndex].answer;
+            const optionsContainer = selectedLabel.parentElement;
+
+            optionsContainer.querySelectorAll('.option-label').forEach(label => {
+                label.classList.add('disabled');
+            });
+
+            const correctLabel = optionsContainer.querySelector(`label[data-key="${correctAnswer}"]`);
+
+            if (userAnswer === correctAnswer) {
+                correctCount++;
+                selectedLabel.classList.remove('border-gray-600', 'hover:bg-gray-600');
+                selectedLabel.classList.add('bg-green-500/20', 'border-green-500');
+            } else {
+                incorrectCount++;
+                selectedLabel.classList.remove('border-gray-600', 'hover:bg-gray-600');
+                selectedLabel.classList.add('bg-red-500/20', 'border-red-500');
+                if (correctLabel) {
+                    correctLabel.classList.remove('border-gray-600', 'hover:bg-gray-600');
+                    correctLabel.classList.add('bg-green-500/20', 'border-green-500');
+                }
+            }
+
+            updateScoreboard();
+            nextButton.classList.remove('hidden');
+        }
+        
+        function showFinalResults() {
+            quizContainer.innerHTML = `
+                <div class="bg-gray-700 shadow-md rounded-lg p-6 text-center">
+                    <h2 class="text-2xl font-bold mb-4 text-teal-400">¡Test Completado!</h2>
+                    <p class="text-lg text-gray-300">Has finalizado el cuestionario.</p>
+                </div>
+            `;
+            nextButton.classList.add('hidden');
+            restartButton.classList.remove('hidden');
+        }
+
+        function updateScoreboard() {
+            correctScoreElem.textContent = correctCount;
+            incorrectScoreElem.textContent = incorrectCount;
+        }
+
+        nextButton.addEventListener('click', () => {
+            currentQuestionIndex++;
+            showQuestion();
+        });
+
+        restartButton.addEventListener('click', startQuiz);
+
+        // Initial start
+        startQuiz();
+    </script>
+</body>
+</html>
